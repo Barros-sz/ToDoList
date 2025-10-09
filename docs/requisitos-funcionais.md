@@ -1,0 +1,8 @@
+-RF01: O sistema deve exibir a lista completa de tarefas cadastradas, mostrando o título/descrição e o status de conclusão de cada uma. (Visualização/Listagem inicial)
+-RF02: O sistema deve permitir ao usuário adicionar uma nova tarefa fornecendo um título/descrição. (Criação)
+-RF03: O sistema deve criar a nova tarefa e exibi-la imediatamente na lista de tarefas ativas. (Feedback imediato da criação)
+-RF04: O sistema deve permitir ao usuário editar o título/descrição de uma tarefa existente e salvar as modificações. (Modificação)
+-RF05: O sistema deve permitir ao usuário marcar uma tarefa como concluída (ou desmarcar, se já estiver concluída) com uma única interação e alterar seu status visualmente (ex: riscar o texto). (Conclusão)
+-RF06: O sistema deve permitir ao usuário excluir permanentemente uma tarefa existente, solicitando confirmação. (Remoção)
+-RF07: O sistema deve permitir a filtragem das tarefas, incluindo a separação visual das tarefas concluídas e ativas. (Organização)
+-RF08: O sistema deve permitir a pesquisa (busca) de tarefas por texto. (Organização/Busca)

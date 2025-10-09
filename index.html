@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EsToDoList (Light/Dark Mode)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos Sketch Border (Padrão: Light Mode - Borda Preta) */
+        .sketch-border {
+            border: 2px solid black;
+            border-radius: 10px;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.8);
+            transition: all 0.1s ease-in-out;
+        }
+        .sketch-border:hover {
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.8);
+            transform: translate(2px, 2px);
+        }
+
+        /* Estilos Sketch Border (Dark Mode - Borda Branca) */
+        .dark .sketch-border {
+            border: 2px solid white; 
+            box-shadow: 4px 4px 0px 0px rgba(255,255,255,0.8);
+        }
+        .dark .sketch-border:hover {
+            box-shadow: 2px 2px 0px 0px rgba(255,255,255,0.8);
+            transform: translate(2px, 2px);
+        }
+
+        /* Task Item (Shared) */
+        .task-item {
+            border-radius: 8px;
+        }
+        /* Task Item Border (Light Mode - Padrão: Borda Preta) */
+        .task-item.todo {
+            border: 2px solid black;
+        }
+        .task-item.done {
+            border: 4px solid #22c55e; /* green-500 */
+            opacity: 0.7;
+        }
+        /* Task Item Border (Dark Mode - Borda Branca) */
+        .dark .task-item.todo {
+            border: 2px solid white;
+        }
+
+        /* Checkbox (Padrão: Light Mode) */
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            height: 24px;
+            width: 24px;
+            border: 2px solid black; /* Borda preta em Light Mode */
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;    
+            position: relative;
+        }
+
+        /* Checkbox (Dark Mode) */
+        .dark input[type="checkbox"] {
+            border: 2px solid white; /* Borda branca em Dark Mode */
+            background-color: #1f2937; /* bg-gray-800 */
+        }
+        
+        /* Checkbox Checked State (Shared - verde) */
+        input[type="checkbox"]:checked {
+            background-color: #22c55e; /* green-500 */
+            border-color: #22c55e;
+        }
+        /* Checkmark (Shared - branco) */
+        input[type="checkbox"]:checked::before {
+            content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.81 3.81L15.498 4.32a.75.75 0 011.206-.167z" clip-rule="evenodd" /></svg>');
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 flex justify-center p-8 min-h-screen relative">
+    
+    <button id="toggle-mode" class="absolute top-8 right-8 p-3 bg-white text-black dark:bg-gray-800 dark:text-white sketch-border">
+        </button>
+    <div class="flex max-w-4xl w-full space-x-8">
+
+        <div class="flex flex-col space-y-3 pt-24 min-w-max">
+            <button id="filter-all" class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border filter-btn active-filter" data-filter="all">
+                Todas as Tarefas
+            </button>
+            <button id="filter-completed" class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border filter-btn" data-filter="completed">
+                somente concluídos
+            </button>
+            <button id="filter-uncompleted" class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border filter-btn" data-filter="uncompleted">
+                somente a concluir
+            </button>
+            <hr class="border-t border-gray-300 dark:border-gray-700 my-2">
+            <button id="sort-oldest" class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border sort-btn" data-sort="oldest">
+                + antigas primeiro
+            </button>
+            <button id="sort-newest" class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border sort-btn active-sort" data-sort="newest">
+                + recentes primeiro
+            </button>
+        </div>
+        <div class="flex-1 flex flex-col items-center max-w-xl mx-auto">
+            
+            <h1 class="text-4xl font-bold mb-8 text-black dark:text-white">EsToDoList</h1>
+
+            <div class="w-full flex mb-4">
+                <input type="text" id="new-task-input" placeholder="Digite uma tarefa..." 
+                        class="flex-1 px-4 py-3 bg-white text-black dark:bg-gray-800 dark:text-white dark:border-white text-lg outline-none sketch-border border-r-0 rounded-r-none focus:ring-0">
+                <button id="add-task-btn" class="bg-white text-black dark:bg-gray-800 dark:text-white px-4 py-3 sketch-border rounded-l-none hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:border-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="w-full flex mb-8">
+                <input type="text" id="search-input" placeholder="Pesquisar tarefas..." 
+                        class="flex-1 px-4 py-3 bg-white text-black dark:bg-gray-800 dark:text-white dark:border-white text-lg outline-none sketch-border border-r-0 rounded-r-none focus:ring-0">
+                <button id="search-btn" class="bg-white text-black dark:bg-gray-800 dark:text-white px-4 py-3 sketch-border rounded-l-none hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:border-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="task-list" class="w-full space-y-4">
+                </div>
+
+        </div>
+    </div>
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+<!-----------------------------------------------------------------------------------------JS-------------------------------------------------------------------------------->
+
+    <script>
+        // Inicialização de Variáveis Globais
+        const taskListEl = document.getElementById('task-list');
+        const newTaskInput = document.getElementById('new-task-input');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const searchInput = document.getElementById('search-input');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sortBtns = document.querySelectorAll('.sort-btn');
+        const toggleModeBtn = document.getElementById('toggle-mode');
+        const htmlElement = document.documentElement;
+
+        // Ícones SVG para alternar entre Dark e Light Mode
+        const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.585 7.034a.75.75 0 0 0-1.25-.92l-1.442 1.053a.75.75 0 0 0 .92 1.25l1.442-1.053ZM18.331 6.098a.75.75 0 0 0-1.135-.297l-1.393 1.132a.75.75 0 0 0 .964 1.183l1.393-1.132a.75.75 0 0 0 .19-.924ZM12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12ZM3.75 12a.75.75 0 0 0 0 1.5h2.25a.75.75 0 0 0 0-1.5H3.75ZM18 12a.75.75 0 0 0 0 1.5h2.25a.75.75 0 0 0 0-1.5H18ZM7.034 16.415a.75.75 0 0 0 1.25.92l1.442-1.053a.75.75 0 0 0-.92-1.25l-1.442 1.053ZM16.415 17.034a.75.75 0 0 0 1.25.92l1.442-1.053a.75.75 0 0 0-.92-1.25l-1.442 1.053ZM12 18.75a.75.75 0 0 0-.75.75v2.25a.75.75 0 0 0 1.5 0v-2.25a.75.75 0 0 0-.75-.75Z" /></svg>`;
+        const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.546 1.096A10.5 10.5 0 0 0 12 21.5a10.5 10.5 0 0 0 10.454-10.454C22.094 6.784 18.498 3.188 13.954 3.962A7.5 7.5 0 0 1 10.5 7.5c0 4.004-3.528 7.272-7.854 7.424C4.188 18.498 7.784 22.094 12 22.5c5.786 0 10.5-4.714 10.5-10.5S17.786 1.5 12 1.5c-2.486 0-4.793.85-6.685 2.296C6.678 3.197 9.17 1.282 9.546 1.096Z" clip-rule="evenodd" /></svg>`;
+
+
+        let tasks = []; 
+        let currentFilter = 'all';
+        let currentSort = 'newest';
+
+        // --- Funções de Ajuda ---
+
+        /** Atualiza o ícone do botão Dark Mode (sol/lua) */
+        function updateModeIcon() {
+            const isDark = htmlElement.classList.contains('dark');
+            toggleModeBtn.innerHTML = isDark ? sunIcon : moonIcon;
+        }
+
+        /** Carrega tarefas do Local Storage ou usa tarefas iniciais. */
+        function loadTasks() {
+            const storedTasks = localStorage.getItem('esToDoListTasks');
+            if (storedTasks) {
+                tasks = JSON.parse(storedTasks).map(task => ({
+                    ...task,
+                    timestamp: new Date(task.timestamp) 
+                }));
+            } else {
+                const now = Date.now();
+                tasks = [
+                    { id: now + 1, text: "Fazer o desafio EsToDoList funcional", completed: true, timestamp: new Date(now - 86400000) },
+                    { id: now + 2, text: "Corrigir os estilos para Light Mode", completed: false, timestamp: new Date(now) }
+                ];
+            }
+        }
+
+        /** Salva as tarefas no Local Storage. */
+        function saveTasks() {
+            localStorage.setItem('esToDoListTasks', JSON.stringify(tasks));
+        }
+
+        /** Salva o modo atual (dark/light) no Local Storage. */
+        function saveModePreference() {
+            const isDark = htmlElement.classList.contains('dark');
+            localStorage.setItem('esToDoListMode', isDark ? 'dark' : 'light');
+        }
+
+        /** Carrega o modo preferido do Local Storage. */
+        function loadModePreference() {
+            const preferredMode = localStorage.getItem('esToDoListMode');
+            if (preferredMode === 'dark') {
+                htmlElement.classList.add('dark');
+            } else {
+                htmlElement.classList.remove('dark'); 
+            }
+            updateModeIcon();
+        }
+
+        /** Cria o HTML para um item de tarefa. */
+        function createTaskElement(task) {
+            const taskClass = task.completed ? 'done' : 'todo';
+            const textClass = task.completed ? 'text-gray-500 line-through dark:text-gray-400' : 'text-black dark:text-white';
+            
+            const taskDiv = document.createElement('div');
+            taskDiv.className = `task-item bg-white dark:bg-gray-800 p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 ${taskClass}`;
+            taskDiv.dataset.id = task.id;
+
+            taskDiv.innerHTML = `
+                <div class="flex items-center space-x-4">
+                    <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+                    <label for="task-${task.id}" class="text-xl ${textClass}">${task.text}</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button class="text-yellow-600 hover:text-yellow-700 edit-btn" data-id="${task.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 17.25H5.75V12.416l10.92-10.92Z" />
+                        </svg>
+                    </button>
+                    <button class="text-red-500 hover:text-red-600 delete-btn" data-id="${task.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9.497-.365 7.3a1.5 1.5 0 0 1-1.493 1.353H9.118a1.5 1.5 0 0 1-1.493-1.353l-.366-7.3m10.875 0V7.5A2.25 2.25 0 0 0 18 5.25h-4.5V3.75a1.5 1.5 0 0 0-3 0v1.5H6A2.25 2.25 0 0 0 3.75 7.5v1.997m-.75 0 1.954 11.666A3.75 3.75 0 0 0 8 22.5h8.5a3.75 3.75 0 0 0 3.546-2.837L21.75 9.497" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+            return taskDiv;
+        }
+
+        // --- Lógica Principal de Renderização ---
+        function renderTasks() {
+            let filteredTasks = tasks;
+            const searchTerm = searchInput.value.toLowerCase();
+
+            // 1. Pesquisa
+            if (searchTerm.length > 0) {
+                filteredTasks = filteredTasks.filter(task =>
+                    task.text.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // 2. Filtragem
+            if (currentFilter === 'completed') {
+                filteredTasks = filteredTasks.filter(task => task.completed);
+            } else if (currentFilter === 'uncompleted') {
+                filteredTasks = filteredTasks.filter(task => !task.completed);
+            }
+
+            // 3. Ordenação
+            filteredTasks.sort((a, b) => {
+                if (currentSort === 'newest') {
+                    return b.timestamp - a.timestamp; 
+                } else if (currentSort === 'oldest') {
+                    return a.timestamp - b.timestamp; 
+                }
+                return 0;
+            });
+
+            // 4. Renderização
+            taskListEl.innerHTML = ''; 
+            if (filteredTasks.length === 0) {
+                 taskListEl.innerHTML = `<p class="text-gray-500 dark:text-gray-400 text-center mt-8">Nenhuma tarefa encontrada. 😢</p>`;
+            } else {
+                filteredTasks.forEach(task => {
+                    taskListEl.appendChild(createTaskElement(task));
+                });
+            }
+        }
+
+        // --- Funções de Manipulação de Tarefas (Sem Alterações) ---
+
+        function addTask() {
+            const text = newTaskInput.value.trim();
+            if (text === "") return;
+            const newTask = {
+                id: Date.now(),
+                text: text,
+                completed: false,
+                timestamp: new Date()
+            };
+            tasks.push(newTask);
+            newTaskInput.value = '';
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        function toggleTaskCompletion(id) {
+            const task = tasks.find(task => task.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                renderTasks(); 
+            }
+        }
+
+        function editTask(id) {
+            const task = tasks.find(task => task.id === id);
+            if (!task) return;
+            const newText = prompt("Edite a tarefa:", task.text);
+            if (newText && newText.trim() !== "" && newText.trim() !== task.text) {
+                task.text = newText.trim();
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+
+        // --- Configuração de Event Listeners ---
+
+        // Adicionar Tarefa
+        addTaskBtn.addEventListener('click', addTask);
+        newTaskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+        
+        // Pesquisa
+        searchInput.addEventListener('input', renderTasks);
+        
+        // Delegação de Eventos para a Lista de Tarefas (Checkbox, Delete, Edit)
+        taskListEl.addEventListener('click', (e) => {
+            const id = parseInt(e.target.dataset.id || e.target.closest('button')?.dataset.id);
+            if (!id) return;
+            
+            if (e.target.type === 'checkbox') {
+                toggleTaskCompletion(id);
+            } else if (e.target.closest('.delete-btn')) {
+                deleteTask(id);
+            } else if (e.target.closest('.edit-btn')) {
+                editTask(id);
+            }
+        });
+
+        // Filtragem
+        filterBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                const newFilter = button.dataset.filter;
+                if (currentFilter === newFilter) {
+                    currentFilter = 'all'; 
+                } else {
+                    currentFilter = newFilter;
+                }
+                
+                filterBtns.forEach(btn => btn.classList.remove('active-filter'));
+                if (currentFilter === 'all') {
+                    document.getElementById('filter-all').classList.add('active-filter');
+                } else {
+                     button.classList.add('active-filter');
+                }
+                
+                renderTasks();
+            });
+        });
+        
+        // Ordenação
+        sortBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                currentSort = button.dataset.sort;
+                
+                sortBtns.forEach(btn => btn.classList.remove('active-sort'));
+                button.classList.add('active-sort');
+                
+                renderTasks();
+            });
+        });
+
+        // Alternar Modo (Dark/Light)
+        toggleModeBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            saveModePreference();
+            updateModeIcon();
+            renderTasks();
+        });
+
+
+        // --- Inicialização da Aplicação ---
+
+        function init() {
+            loadModePreference();
+            loadTasks();
+            renderTasks();
+        }
+
+        init();
+    </script>
+
+</body>
+</html>

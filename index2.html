@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EsToDoList (Light/Dark Mode)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+
+<body class="bg-gray-50 dark:bg-gray-950 flex justify-center flex-row  items-start pt-12 min-h-screen">
+    <main class="w-full max-w-sm lg:max-w-lg p-6 bg-white dark:bg-black border border-white rounded-lg shrink-x1">
+        <h1 class="text-4xl font-bold mb-8 text-black dark:text-white">EsToDoList</h1>
+        <div class="w-full flex mb-4">
+            <input type="text" id="new-task-input" placeholder="Digite uma tarefa..."
+                class="flex-1 px-4 py-3 bg-white text-black dark:bg-gray-800 dark:text-white dark:border-white text-lg outline-none sketch-border border-r-0 rounded-r-none focus:ring-0">
+            <button id="add-task-btn"
+                class="bg-white text-black dark:bg-gray-800 dark:text-white px-4 py-3 sketch-border rounded-l-none hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:border-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+            </button>
+        </div>
+    </main>
+</body>
+
+</html>
