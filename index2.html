@@ -23,6 +23,39 @@
                 </svg>
             </button>
         </div>
+        <ul id=" lista-de-tarefas" class="space-y-3">
+            <li
+                class="flex justify-between items-center p-3 border border-gray-300 hover:bg-gray-900 rounded-lg shadow-sm cursor-pointer transition duration-150 ease-in-out">
+                <div>
+                    <input type="checkbox">
+                    <span class="text-white flex-grow">tarefa 1</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button>✏</button>
+                    <button>🗑</button>
+                </div>
+
+            </li>
+        </ul>
+        <hr class="my-6 border-zinc-700 dark:border-zinc-200">
+
+        <div class="flex flex-col space-y-3 pt-24 min-w-max">
+            <button id="filter-all"
+                class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border filter-btn active-filter"
+                data-filter="all">
+                Todas as Tarefas
+            </button>
+            <button id="filter-completed"
+                class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border filter-btn"
+                data-filter="completed">
+                somente concluídos
+            </button>
+            <button id="filter-uncompleted"
+                class="px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white text-sm font-semibold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 sketch-border filter-btn"
+                data-filter="uncompleted">
+                somente a concluir
+            </button>
+        </div>
     </main>
 </body>
 
