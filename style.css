@@ -1,0 +1,86 @@
+      /* Estilos Sketch Border (Padrão: Light Mode - Borda Preta) */
+      .sketch-border {
+          border: 2px solid black;
+          border-radius: 10px;
+          box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+          transition: all 0.1s ease-in-out;
+      }
+
+      .sketch-border:hover {
+          box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+          transform: translate(2px, 2px);
+      }
+
+      /* Estilos Sketch Border (Dark Mode - Borda Branca) */
+      .dark .sketch-border {
+          border: 2px solid white;
+          box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.8);
+      }
+
+      .dark .sketch-border:hover {
+          box-shadow: 2px 2px 0px 0px rgba(255, 255, 255, 0.8);
+          transform: translate(2px, 2px);
+      }
+
+      /* Task Item (Shared) */
+      .task-item {
+          border-radius: 8px;
+      }
+
+      /* Task Item Border (Light Mode - Padrão: Borda Preta) */
+      .task-item.todo {
+          border: 2px solid black;
+      }
+
+      .task-item.done {
+          border: 4px solid #22c55e;
+          /* green-500 */
+          opacity: 0.7;
+      }
+
+      /* Task Item Border (Dark Mode - Borda Branca) */
+      .dark .task-item.todo {
+          border: 2px solid white;
+      }
+
+      /* Checkbox (Padrão: Light Mode) */
+      input[type="checkbox"] {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          height: 24px;
+          width: 24px;
+          border: 2px solid black;
+          /* Borda preta em Light Mode */
+          border-radius: 4px;
+          background-color: white;
+          cursor: pointer;
+          position: relative;
+      }
+
+      /* Checkbox (Dark Mode) */
+      .dark input[type="checkbox"] {
+          border: 2px solid white;
+          /* Borda branca em Dark Mode */
+          background-color: #1f2937;
+          /* bg-gray-800 */
+      }
+
+      /* Checkbox Checked State (Shared - verde) */
+      input[type="checkbox"]:checked {
+          background-color: #22c55e;
+          /* green-500 */
+          border-color: #22c55e;
+      }
+
+      /* Checkmark (Shared - branco) */
+      input[type="checkbox"]:checked::before {
+          content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.81 3.81L15.498 4.32a.75.75 0 011.206-.167z" clip-rule="evenodd" /></svg>');
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: block;
+          width: 20px;
+          height: 20px;
+      }
